@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Threading;
 
 namespace ConverterPhantomCore
 {
@@ -175,7 +174,18 @@ namespace ConverterPhantomCore
                 return null;
             }
 
-            return canvasWidthHeight * RangeToNormalizedValue(min, max, value);
+            try
+            {
+                return canvasWidthHeight * RangeToNormalizedValue(min, max, value);
+            }
+            catch (ArgumentException e) when (e.Message == ValueLessThanMin)
+            {
+                return 0;
+            }
+            catch (ArgumentException e) when (e.Message == ValueGreaterThanMax)
+            {
+                return canvasWidthHeight;
+            }
         }
 
         // This is in a utility class normally
